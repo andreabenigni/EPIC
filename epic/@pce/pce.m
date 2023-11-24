@@ -1,14 +1,12 @@
 classdef pce
 
-% \brief encapsulates a polynomial chaos expansion (PCE) of a random/uncertain process/variable
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                  EPIC: Easy Polynomial Chaos                       %%%
-%%%   Authors: Matthew Milton, Andrea Benigni, Antonello Monti         %%%
+%%%               EPIC2: Easy Polynomial Chaos (v.2.1.0)               %%%
+%%%         Authors: M. Milton, A. Benigni, S. Schwarz, A. Monti       %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This file is part of EPIC (Easy PolynomIal Chaos) Toolbox.             %
+% This file is part of EPIC2.                                            %
 %                                                                        %
 % EPIC is free software: you can redistribute it and/or modify           %
 % it under the terms of the GNU General Public License as published by   %
@@ -24,11 +22,13 @@ classdef pce
 % along with EPIC.  If not, see <http://www.gnu.org/licenses/>.          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%===================================================================================================
+% \brief encapsulates a polynomial chaos expansion (PCE) of a random/uncertain process/variable
 
     properties
-        space % polynomial chaos vector space definition used by the PCE objects
-        val   % polynomial projection coefficients of PCE objects
+        space      % polynomial chaos vector space definition used by the PCE objects
+        val        % polynomial projection coefficients of PCE objects
+        var_index  % polynomial chaos var_index
+        dist_type  % pce type
 	end
 	
 %===================================================================================================
@@ -53,19 +53,24 @@ classdef pce
 			% \param var_index the index that the pce variable holds to be marked as probabilisitc; set to 0 for a determinsitic variable
 			% \return obj constructed pce object
 			
-% 			if(~isa(pc_space,'PolynomialChaosSpace'))
-%                 error('pce::constructor(pc_space, expected_value, range, var_index) -- poly_chaos_def must be a PolynomialSpace');
-%           end %if 
+            %if(~isa(pc_space,'PolynomialChaosSpace'))
+            %error('pce::constructor(pc_space, expected_value, range, var_index) -- poly_chaos_def must be a PolynomialSpace');
+            %end %if 
  
             %obj.space = pc_space;
             %obj.val = zeros(1,pc_space.num_coefficients);
+
 			
 			if (nargin == 0)
 				
 				obj.space = [];
 				obj.val = [];
+                obj.var_index = 0;
+                obj.dist_type = "uniform";
 				
 			elseif (nargin == 1)
+
+                class(pc_space)
 				
 				if(~isa(pc_space,'PolynomialChaosSpace'))
 					error('pce::constructor(pc_space, expected_value, range, var_index) -- poly_chaos_def must be a PolynomialSpace');
@@ -73,6 +78,8 @@ classdef pce
 				
 				obj.space = pc_space;
 				obj.val = zeros(1,pc_space.num_coefficients);
+                obj.var_index = 0;
+                obj.dist_type = pc_space.dist_type;
 				
             elseif (nargin == 2)
 				
@@ -83,7 +90,22 @@ classdef pce
 				obj.space = pc_space;
 				obj.val = zeros(1,pc_space.num_coefficients);
 				obj.val(1) = expected_value;
+                obj.var_index = 0;
+                obj.dist_type = pc_space.dist_type;
 				
+            elseif (nargin == 3)
+				
+				if(~isa(pc_space,'PolynomialChaosSpace'))
+					error('pce::constructor(pc_space, expected_value, range, var_index) -- poly_chaos_def must be a PolynomialSpace');
+				end
+				
+				obj.space = pc_space;
+				obj.val = zeros(1,pc_space.num_coefficients);
+				obj.val(1) = expected_value;
+                obj.val(2) = range;
+                obj.var_index = 0;
+                obj.dist_type = pc_space.dist_type;
+            
             elseif(nargin == 4)
 				
 				if(~isa(pc_space,'PolynomialChaosSpace'))
@@ -93,6 +115,8 @@ classdef pce
 				obj.space = pc_space;
 				obj.val = zeros(1,pc_space.num_coefficients);
 				obj.val(1) = expected_value;
+                obj.var_index = max(0,var_index-1);
+                obj.dist_type = pc_space.dist_type;
                 
 				if var_index > 0
                     pos = var_index+1;
@@ -115,17 +139,48 @@ classdef pce
 		
 		function variance = getVariance(obj)
 			% \return variance moment of the pce object; 0.0 if deterministic
-			
-			variance = 0.0;
-			for i = 2:1:(obj.space.num_coefficients)
-				variance = variance + obj.val(i)*obj.val(i);
-			end
-		end
+            P = obj.space.num_coefficients;
+            
+            variance = 0.0;
+            if obj.dist_type == "uniform"
+                uniform_c = zeros(1,obj.space.num_coefficients);
+                for k=1:P
+                    for i=1:P
+                        if i == 1
+                            uniform_c(k) = uniform_c(k) + obj.space.inner_products(i,1,k) * obj.val(i);
+                        elseif i <= P-1
+                            uniform_c(k) = uniform_c(k) + obj.space.inner_products(i,1,k) * obj.val(i+obj.var_index);
+                        else
+                            uniform_c(k) = uniform_c(k) + obj.space.inner_products(i,1,k) * obj.val(i);
+                        end
+                    end
+                    if k >= 2
+                        variance = variance + uniform_c(k)*uniform_c(k)/(2*(k-1)+1);
+                    end
+                end
+            elseif obj.dist_type == "gaussian"
+                gaussian_c = zeros(1,obj.space.num_coefficients);
+                for k=1:P
+                    for i=1:P
+                        if i == 1
+                            gaussian_c(k) = gaussian_c(k) + obj.space.inner_products(i,1,k) * obj.val(i);
+                        elseif i <= P-1
+                            gaussian_c(k) = gaussian_c(k) + obj.space.inner_products(i,1,k) * obj.val(i+obj.var_index);
+                        else
+                            gaussian_c(k) = gaussian_c(k) + obj.space.inner_products(i,1,k) * obj.val(i);
+                        end
+                    end
+                    if k >= 2
+                        variance = variance + gaussian_c(k)*gaussian_c(k)*factorial(k-1);
+                    end
+                end
+            end
+        end
 		
 		function std = getStandardDeviation(obj)
 			% \return standard deviation moment of the pce object; 0.0 if deterministic
 			
-			std = sqrt( obj.getVariance() ); 
+			std = sqrt(obj.getVariance()); 
 		end
 		
 		function mad = getMeanAbsoluteDeviation(obj)

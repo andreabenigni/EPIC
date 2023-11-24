@@ -1,12 +1,12 @@
 function c = stimes(a,b)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                  EPIC: Easy Polynomial Chaos                       %%%
-%%%   Authors: Matthew Milton, Andrea Benigni, Antonello Monti         %%%
+%%%               EPIC2: Easy Polynomial Chaos (v.2.1.0)               %%%
+%%%         Authors: M. Milton, A. Benigni, S. Schwarz, A. Monti       %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This file is part of EPIC.                                             %
+% This file is part of EPIC2.                                            %
 %                                                                        %
 % EPIC is free software: you can redistribute it and/or modify           %
 % it under the terms of the GNU General Public License as published by   %
@@ -32,7 +32,19 @@ function c = stimes(a,b)
 			error('pce::stimes(a,b) -- a and b are not in same polynomial chaos space');
 		end %if
         
-        c = pce(a.space, 0.0, 0.0, 0);
+        for i1 = 1:size(a,1)
+            tmp = pce();
+            tmp.space = a.space;
+            tmp.val = zeros(1, length(a(1).val));
+            tmp.var_index = 0;
+            tmp.dist_type = a.dist_type;
+            ccol(i1,1) = tmp;
+        end
+        c = ccol;
+        for j1 = 1:size(b,2)-1
+            c = [c ccol];
+        end
+        
 		P = a.space.num_coefficients;
 		
 		for k=1:P

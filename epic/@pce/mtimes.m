@@ -1,14 +1,12 @@
 function c=mtimes(a,b)
 
-% \brief overloaded operator for array/matrix multiplication (*) for pce object arrays
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                  EPIC: Easy Polynomial Chaos                       %%%
-%%%   Authors: Matthew Milton, Andrea Benigni, Antonello Monti         %%%
+%%%               EPIC2: Easy Polynomial Chaos (v.2.1.0)               %%%
+%%%         Authors: M. Milton, A. Benigni, S. Schwarz, A. Monti       %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This file is part of EPIC.                                             %
+% This file is part of EPIC2.                                            %
 %                                                                        %
 % EPIC is free software: you can redistribute it and/or modify           %
 % it under the terms of the GNU General Public License as published by   %
@@ -23,7 +21,9 @@ function c=mtimes(a,b)
 % You should have received a copy of the GNU General Public License      %
 % along with EPIC.  If not, see <http://www.gnu.org/licenses/>.          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
+% \brief overloaded operator for array/matrix multiplication (*) for pce object arrays
+
 	if(isscalar(a))
 		
 		nelement = numel(b);
@@ -42,14 +42,25 @@ function c=mtimes(a,b)
 			c(i) = stimes(a(i),b);
 		end
 		
-	elseif(size(a,2) == size(b,1))
-		
-		c( size(a,1), size(b,2) ) = pce;
+	elseif(size(a,2) == size(b,1))	
+        for i1 = 1:size(a,1)
+            tmp = pce();
+            tmp.space = b.space;
+            tmp.val = zeros(1, length(b(1).val));
+            tmp.var_index = 0;
+            tmp.dist_type = b.dist_type;
+            ccol(i1,1) = tmp;
+        end
+        c = ccol;
+        for j1 = 1:size(b,2)-1
+            c = [c ccol];
+        end
+
 		
 		for i = 1:1:size(a,1)
 			for j = 1:1:size(b,2)
 				for k = 1:1:size(a,2)
-					c(i,j) = c(i,j)+stimes( a(i,k), b(k,j) );
+					c(i,j) = c(i,j)+stimes(a(i,k),b(k,j));
 				end
 			end
 		end

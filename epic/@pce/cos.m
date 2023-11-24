@@ -1,11 +1,12 @@
 function c=cos(a)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                  EPIC: Easy Polynomial Chaos                       %%%
-%%%   Authors: Matthew Milton, Andrea Benigni, Antonello Monti         %%%
+%%%               EPIC2: Easy Polynomial Chaos (v.2.1.0)               %%%
+%%%         Authors: M. Milton, A. Benigni, S. Schwarz, A. Monti       %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This file is part of EPIC.                                             %
+% This file is part of EPIC2.                                            %
 %                                                                        %
 % EPIC is free software: you can redistribute it and/or modify           %
 % it under the terms of the GNU General Public License as published by   %
@@ -21,9 +22,6 @@ function c=cos(a)
 % along with EPIC.  If not, see <http://www.gnu.org/licenses/>.          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-error('pce::cos(a) -- not yet supported');
-
 c = 1 - (a.*a)/factorial(2) + (a.*a.*a.*a)/factorial(4) - (a.*a.*a.*a.*a.*a)/factorial(6) + (a.*a.*a.*a.*a.*a.*a.*a)/factorial(8) - (a.*a.*a.*a.*a.*a.*a.*a.*a.*a)/factorial(10);
-    
-   
+
 end

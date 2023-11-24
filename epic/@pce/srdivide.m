@@ -1,18 +1,12 @@
 function c = srdivide(a,b)
 
-% \brief non-overloaded operator for right element-wise division between scalar (1x1) pce/double
-% objects
-% \param a first operand
-% \param b second operand
-% \return c quotient of a/b
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                  EPIC: Easy Polynomial Chaos                       %%%
-%%%   Authors: Matthew Milton, Andrea Benigni, Antonello Monti         %%%
+%%%               EPIC2: Easy Polynomial Chaos (v.2.1.0)               %%%
+%%%         Authors: M. Milton, A. Benigni, S. Schwarz, A. Monti       %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This file is part of EPIC.                                             %
+% This file is part of EPIC2.                                            %
 %                                                                        %
 % EPIC is free software: you can redistribute it and/or modify           %
 % it under the terms of the GNU General Public License as published by   %
@@ -28,6 +22,11 @@ function c = srdivide(a,b)
 % along with EPIC.  If not, see <http://www.gnu.org/licenses/>.          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% \brief non-overloaded operator for right element-wise division between scalar (1x1) pce/double
+% objects
+% \param a first operand
+% \param b second operand
+% \return c quotient of a/b
 
 	if(isa(a,'pce') && isa(b,'pce'))
 		if( ~isequal(a.space, b.space) )

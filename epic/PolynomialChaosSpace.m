@@ -1,12 +1,12 @@
 classdef PolynomialChaosSpace < handle
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                  EPIC: Easy Polynomial Chaos                       %%%
-%%%   Authors: Matthew Milton, Andrea Benigni, Antonello Monti         %%%
+%%%               EPIC2: Easy Polynomial Chaos (v.2.1.0)               %%%
+%%%         Authors: M. Milton, A. Benigni, S. Schwarz, A. Monti       %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This file is part of EPIC.                                             %
+% This file is part of EPIC2.                                            %
 %                                                                        %
 % EPIC is free software: you can redistribute it and/or modify           %
 % it under the terms of the GNU General Public License as published by   %
@@ -40,22 +40,28 @@ properties
     order              % highest order or degree of applied orthogonal polynomials
     num_coefficients   % number of coefficients of polynomial chaos expansions, computed from num_variables and order
     inner_products     % 3D tensor storing inner products between orthogonal polynomials
+    dist_type          % distribution type
     
 end %properties
 
 methods
   
-    function obj = PolynomialChaosSpace(num_variables, order)
+    function obj = PolynomialChaosSpace(num_variables, order, dist_type)
         
         % \brief constructor
         % \param num_variables the number of random variables in a system defined under polynomial chaos
         % \param order highest order or degree of applied orthogonal polynomials
-        % \return obj handle to the created object
-        
+        % \return obj handle to the created object           
         obj.num_variables = num_variables;
         obj.order = order;
         obj.num_coefficients = factorial(num_variables+order)/(factorial(num_variables)*factorial(order));
         obj.inner_products = [];
+        if (nargin < 3)
+            obj.dist_type = "uniform";
+        else
+            obj.dist_type = dist_type;
+        end
+        
         return;
         
     end %function
@@ -97,7 +103,7 @@ methods
         
         % \brief computes the inner product tensor of the space of Hermite Polynomials
         
-        obj.inner_products = computeHermiteInnerProductTensor(obj.num_variables, obj.order);
+        obj.inner_products = computeInnerProductTensorHermite(obj.num_variables, obj.order);
         
         
     end %function
@@ -106,7 +112,7 @@ methods
         
         % \brief computes the inner product tensor of the space of Legendre Polynomials
         
-        obj.inner_products = computeLegendreInnerProductTensor(obj.num_variables, obj.order);
+        obj.inner_products = computeInnerProductTensorLegendre(obj.num_variables, obj.order);
         
         
     end %function

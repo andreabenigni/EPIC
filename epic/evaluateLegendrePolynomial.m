@@ -1,20 +1,12 @@
 function ret = evaluateLegendrePolynomial(x,order)
 
-% \brief evaluates a Legendre polynomial of order n at point(s) x
-%
-% ...
-%
-% \param x the point value(s) to evaluate the polynomial at
-% \param n the order (or degree) of the polynomial that is to be evaluated
-% \return ret the value(s) of the polynomial at x
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                  EPIC: Easy Polynomial Chaos                       %%%
-%%%   Authors: Matthew Milton, Andrea Benigni, Antonello Monti         %%%
+%%%               EPIC2: Easy Polynomial Chaos (v.2.1.0)               %%%
+%%%         Authors: M. Milton, A. Benigni, S. Schwarz, A. Monti       %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This file is part of EPIC.                                             %
+% This file is part of EPIC2.                                            %
 %                                                                        %
 % EPIC is free software: you can redistribute it and/or modify           %
 % it under the terms of the GNU General Public License as published by   %
@@ -29,6 +21,14 @@ function ret = evaluateLegendrePolynomial(x,order)
 % You should have received a copy of the GNU General Public License      %
 % along with EPIC.  If not, see <http://www.gnu.org/licenses/>.          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \brief evaluates a Legendre polynomial of order n at point(s) x
+%
+% ...
+%
+% \param x the point value(s) to evaluate the polynomial at
+% \param n the order (or degree) of the polynomial that is to be evaluated
+% \return ret the value(s) of the polynomial at x
 
 if(~isscalar(order))
     error('evaluateLegendrePolynomial(x,order) -- order must be a scalar');
